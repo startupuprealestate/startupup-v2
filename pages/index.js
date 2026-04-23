@@ -201,6 +201,8 @@ const generatePropSlug = (p) => {
 // --- Lightbox Component ---
 function Lightbox({ isOpen, images, startIndex, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(startIndex || 0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   useEffect(() => {
       if (isOpen) setCurrentIndex(startIndex || 0);
@@ -214,11 +216,27 @@ function Lightbox({ isOpen, images, startIndex, onClose }) {
 
   if (!isOpen || !images || images.length === 0) return null;
 
-  const nextImg = (e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev + 1) % images.length); };
-  const prevImg = (e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1)); };
+  const nextImg = (e) => { if(e) e.stopPropagation(); setCurrentIndex((prev) => (prev + 1) % images.length); };
+  const prevImg = (e) => { if(e) e.stopPropagation(); setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1)); };
+
+  // ระบบใช้นิ้วปัด (Swipe)
+  const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
+  const handleTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const handleTouchEndAction = () => {
+      if (!touchStart || !touchEnd) return;
+      if (touchStart - touchEnd > 75) nextImg(); // ปัดซ้าย (ไปรูปถัดไป)
+      if (touchStart - touchEnd < -75) prevImg(); // ปัดขวา (กลับรูปเดิม)
+      setTouchStart(0); setTouchEnd(0);
+  };
 
   return (
-      <div className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center backdrop-blur-md animate-in fade-in duration-200" onClick={onClose}>
+      <div 
+        className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center backdrop-blur-md animate-in fade-in duration-200" 
+        onClick={onClose}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEndAction}
+      >
           <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 text-white/70 hover:text-white z-50 p-2 bg-black/20 rounded-full transition"><X size={32}/></button>
           
           <div className="relative w-full max-w-6xl h-full flex items-center justify-center p-4 md:p-8">
@@ -231,10 +249,10 @@ function Lightbox({ isOpen, images, startIndex, onClose }) {
               
               {images.length > 1 && (
                   <>
-                      <button onClick={prevImg} className="absolute left-4 md:left-8 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 p-3 md:p-4 rounded-full transition z-50 shadow-lg hover:scale-110">
+                      <button onClick={prevImg} className="absolute left-4 md:left-8 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 p-3 md:p-4 rounded-full transition z-50 shadow-lg hover:scale-110 hidden md:block">
                           <ChevronLeft size={32} />
                       </button>
-                      <button onClick={nextImg} className="absolute right-4 md:right-8 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 p-3 md:p-4 rounded-full transition z-50 shadow-lg hover:scale-110">
+                      <button onClick={nextImg} className="absolute right-4 md:right-8 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 p-3 md:p-4 rounded-full transition z-50 shadow-lg hover:scale-110 hidden md:block">
                           <ChevronRight size={32} />
                       </button>
                       <div className="absolute bottom-6 md:bottom-10 text-white font-medium text-sm bg-black/60 backdrop-blur px-5 py-2 rounded-full tracking-widest shadow-lg">
@@ -1063,6 +1081,7 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const desktopScrollRef = useRef(null);
   const mobileScrollRef = useRef(null);
+  const mainImageScrollRef = useRef(null); // เพิ่ม Ref สำหรับระบบปัดรูปภาพ
   
   const images = Array.isArray(property?.images) && property.images.length > 0 ? property.images : [property?.imageUrl || "https://placehold.co/600x400"];
   const youtubeId = getYoutubeId(property?.youtubeUrl || '');
@@ -1070,6 +1089,8 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
   useEffect(() => {
       setActiveImg(0);
       setIsVideoPlaying(false);
+      // เลื่อนรูปกลับไปที่รูปแรกเสมอเวลาเปลี่ยนบ้าน
+      if (mainImageScrollRef.current) mainImageScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
   }, [property?.id]);
 
   const safePropName = String(property?.project_name || '').trim();
@@ -1111,6 +1132,17 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
       }
   };
 
+  // ฟังก์ชันเลื่อนรูปภาพหลักเมื่อกดที่ภาพเล็ก
+  const scrollMainImageTo = (index) => {
+      setActiveImg(index);
+      if (mainImageScrollRef.current) {
+          mainImageScrollRef.current.scrollTo({
+              left: index * mainImageScrollRef.current.clientWidth,
+              behavior: 'smooth'
+          });
+      }
+  };
+
   const renderRelatedProps = (refToUse) => {
       if (relatedProps.length === 0) return null;
       return (
@@ -1124,7 +1156,7 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
               </div>
               <div ref={refToUse} className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-6 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
                   {relatedProps.map((p, index) => (
-                      <a href={`/?property=${generatePropSlug(p)}`} key={p.id} onClick={(e) => {
+                      <a href={`/api/share?property=${generatePropSlug(p)}`} key={p.id} onClick={(e) => {
                           if (!e.ctrlKey && !e.metaKey && !e.button) {
                               e.preventDefault(); 
                               if(!isEditMode) onSelectProp(p);
@@ -1174,28 +1206,48 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
                    <ChevronLeft size={16} /> ย้อนกลับ
                 </a>
                 
-                <div 
-                    className="w-full overflow-hidden mb-4 relative group bg-gray-100 rounded-2xl shadow-sm flex items-center justify-center min-h-[300px] cursor-pointer"
-                    onClick={() => openLightbox && openLightbox(images, activeImg)}
-                    title="คลิกเพื่อขยายรูปภาพ"
-                >
-                    <img src={getOptimizedImg(images[activeImg] || images[0] || "https://placehold.co/600x400", 1200)} className="w-full h-auto max-h-[80vh] object-contain transition duration-500 animate-pop" alt="Main" />
+                {/* ระบบสไลด์ภาพแบบใช้นิ้วปัด (Native Swipe) */}
+                <div className="relative group mb-4">
+                    <div 
+                        ref={mainImageScrollRef}
+                        className="w-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide rounded-2xl shadow-sm bg-gray-100 min-h-[300px] md:min-h-[450px]"
+                        style={{ scrollBehavior: 'smooth' }}
+                        onScroll={(e) => {
+                            // อัปเดตจุด/สถานะรูปล่าสุด เมื่อมีการปัดเลื่อน
+                            const index = Math.round(e.target.scrollLeft / e.target.clientWidth);
+                            if (index !== activeImg && index >= 0 && index < images.length) {
+                                setActiveImg(index);
+                            }
+                        }}
+                    >
+                        {images.map((img, idx) => (
+                            <div 
+                                key={idx} 
+                                className="w-full flex-shrink-0 snap-center flex items-center justify-center cursor-pointer relative" 
+                                onClick={() => openLightbox && openLightbox(images, idx)}
+                            >
+                                <img src={getOptimizedImg(img, 1200)} className="w-full h-full max-h-[60vh] object-cover md:object-contain" alt={`Slide ${idx}`} />
+                            </div>
+                        ))}
+                    </div>
+
                     {images.length > 1 && (
                         <>
-                            <button onClick={(e) => { e.stopPropagation(); setActiveImg(prev => (prev === 0 ? images.length - 1 : prev - 1)); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100"><ChevronLeft /></button>
-                            <button onClick={(e) => { e.stopPropagation(); setActiveImg(prev => (prev === images.length - 1 ? 0 : prev + 1)); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100"><ChevronRight /></button>
+                            <button onClick={(e) => { e.stopPropagation(); scrollMainImageTo(activeImg === 0 ? images.length - 1 : activeImg - 1); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100 hidden md:block"><ChevronLeft /></button>
+                            <button onClick={(e) => { e.stopPropagation(); scrollMainImageTo(activeImg === images.length - 1 ? 0 : activeImg + 1); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100 hidden md:block"><ChevronRight /></button>
                         </>
                     )}
-                    {property.badge && <div className={`absolute top-4 right-4 px-4 py-1.5 rounded-full font-medium text-xs shadow-lg z-10 text-white ${property.badge === 'Promotion' ? 'bg-red-600' : property.badge === 'New' ? 'bg-blue-600' : property.badge === 'Sold Out' ? 'bg-gray-600' : 'bg-brand-green'}`}>{property.badge}</div>}
                     
-                    <div className="absolute bottom-4 right-4 bg-black/50 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur">
+                    {property.badge && <div className={`absolute top-4 right-4 px-4 py-1.5 rounded-full font-medium text-xs shadow-lg z-10 text-white pointer-events-none ${property.badge === 'Promotion' ? 'bg-red-600' : property.badge === 'New' ? 'bg-blue-600' : property.badge === 'Sold Out' ? 'bg-gray-600' : 'bg-brand-green'}`}>{property.badge}</div>}
+                    <div className="absolute bottom-4 right-4 bg-black/50 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur pointer-events-none hidden md:block">
                         <Maximize size={20} />
                     </div>
                 </div>
                 
+                {/* รูปเล็ก (Thumbnails) เลื่อนตามรูปหลักอัตโนมัติ */}
                 <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-8">
                     {images.map((img, idx) => (
-                        <button key={idx} onClick={() => setActiveImg(idx)} className={`w-20 h-20 md:w-24 md:h-24 flex-shrink-0 overflow-hidden border-2 transition-all bg-gray-100 rounded-lg ${activeImg === idx ? 'border-brand-green opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}>
+                        <button key={idx} onClick={() => scrollMainImageTo(idx)} className={`w-20 h-20 md:w-24 md:h-24 flex-shrink-0 overflow-hidden border-2 transition-all bg-gray-100 rounded-lg ${activeImg === idx ? 'border-brand-green opacity-100 scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}>
                             <img src={getOptimizedImg(img || "https://placehold.co/100x100", 300)} className="w-full h-full object-cover" alt={`Thumb ${idx}`} />
                         </button>
                     ))}
