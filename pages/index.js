@@ -1269,9 +1269,24 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
                     </div>
                 )}
 
-                <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-2 font-light">
-                    <MapPin size={16} className="text-brand-green flex-shrink-0" />
-                    <span>{property.main_location || property.district} {property.sub_location || property.subdistrict ? `- ${property.sub_location || property.subdistrict}` : ''}</span>
+                {/* บรรทัดแสดงทำเล พร้อมปุ่มแชร์ขวาสุด */}
+                <div className="flex items-center justify-between gap-4 text-gray-500 text-sm mt-2 font-light w-full">
+                    <div className="flex items-center gap-1.5">
+                        <MapPin size={16} className="text-brand-green flex-shrink-0" />
+                        <span>{property.main_location || property.district} {property.sub_location || property.subdistrict ? `- ${property.sub_location || property.subdistrict}` : ''}</span>
+                    </div>
+                    
+                    <button 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            const shareUrl = `https://www.startupup-real-estate.com/api/share?property=${generatePropSlug(property)}`;
+                            navigator.clipboard.writeText(shareUrl);
+                            alert('คัดลอกลิงก์สำหรับแชร์ให้ลูกค้าเรียบร้อยแล้ว!');
+                        }}
+                        className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-full text-[11px] font-medium hover:bg-opacity-90 transition-all shadow-sm flex-shrink-0"
+                    >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    </button>
                 </div>
             </div>
 
