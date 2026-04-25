@@ -1281,7 +1281,7 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
                             e.preventDefault();
                             const shareUrl = `https://www.startupup-real-estate.com/api/share?property=${generatePropSlug(property)}`;
                             navigator.clipboard.writeText(shareUrl);
-                            alert('คัดลอกลิงก์สำหรับแชร์ให้ลูกค้าเรียบร้อยแล้ว!');
+                            alert('คัดลอกลิงก์สำหรับแชร์เรียบร้อยแล้ว!');
                         }}
                         className="flex items-center gap-1.5 bg-brand-green text-white px-3 py-1.5 rounded-full text-[11px] font-medium hover:bg-opacity-90 transition-all shadow-sm flex-shrink-0"
                     >
