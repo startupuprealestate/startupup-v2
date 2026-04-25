@@ -4,6 +4,8 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    "./index.html"
   ],
   theme: {
     extend: {
@@ -15,11 +17,8 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Prompt', 'sans-serif'],
-      },
-      boxShadow: {
-        'soft': '0 20px 50px -12px rgba(11, 61, 27, 0.15)',
       }
     },
   },
   plugins: [],
-};
+}

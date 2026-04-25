@@ -136,10 +136,87 @@ const DISTRICT_COORDS = {
 };
 
 const TRANSIT_LINES = [
-  { name: 'สายสีเขียว (BTS)', color: '#047857', stations: [{name: 'ห้าแยกลาดพร้าว', lat: 13.8157, lng: 100.5615}, {name: 'คูคต', lat: 13.9314, lng: 100.6455}] },
-  { name: 'สายสีแดง (SRT)', color: '#b91c1c', stations: [{name: 'บางซื่อ', lat: 13.8033, lng: 100.5398}, {name: 'รังสิต', lat: 13.9845, lng: 100.5992}] },
-  { name: 'สายสีชมพู (MRT)', color: '#db2777', stations: [{name: 'ศูนย์ราชการนนทบุรี', lat: 13.8601, lng: 100.5144}, {name: 'วัชรพล', lat: 13.8540, lng: 100.6448}] },
-  { name: 'สายสีม่วง (MRT)', color: '#7e22ce', stations: [{name: 'คลองบางไผ่', lat: 13.8906, lng: 100.4035}, {name: 'เตาปูน', lat: 13.8058, lng: 100.5312}] }
+    {
+        id: 'red-dark',
+        name: 'SRT สายสีแดงเข้ม',
+        color: '#E02424',
+        stations: [
+            { id: 'RN10', name: 'รังสิต', lat: 13.9870, lng: 100.5975 },
+            { id: 'RN09', name: 'หลักหก', lat: 13.9634, lng: 100.5937 },
+            { id: 'RN08', name: 'ดอนเมือง', lat: 13.9224, lng: 100.5997 },
+            { id: 'RN07', name: 'การเคหะ', lat: 13.9056, lng: 100.5898 },
+            { id: 'RN06', name: 'หลักสี่', lat: 13.8828, lng: 100.5824 },
+            { id: 'RN05', name: 'ทุ่งสองห้อง', lat: 13.8705, lng: 100.5752 },
+            { id: 'RN04', name: 'บางเขน', lat: 13.8475, lng: 100.5596 },
+            { id: 'RN03', name: 'วัดเสมียนนารี', lat: 13.8378, lng: 100.5539 },
+            { id: 'RN02', name: 'จตุจักร', lat: 13.8260, lng: 100.5458 },
+            { id: 'RN01', name: 'บางซื่อ (Krung Thep Aphiwat)', lat: 13.8048, lng: 100.5398 }
+        ]
+    },
+    {
+        id: 'green-north',
+        name: 'BTS สายสีเขียว',
+        color: '#059669',
+        stations: [
+            { id: 'N24', name: 'คูคต', lat: 13.9317, lng: 100.6450 },
+            { id: 'N23', name: 'แยก คปอ.', lat: 13.9234, lng: 100.6265 },
+            { id: 'N22', name: 'พิพิธภัณฑ์กองทัพอากาศ', lat: 13.9168, lng: 100.6225 },
+            { id: 'N21', name: 'โรงพยาบาลภูมิพลอดุลยเดช', lat: 13.9061, lng: 100.6152 },
+            { id: 'N20', name: 'สะพานใหม่', lat: 13.8960, lng: 100.6086 },
+            { id: 'N19', name: 'สายหยุด', lat: 13.8860, lng: 100.6022 },
+            { id: 'N18', name: 'พหลโยธิน 59', lat: 13.8798, lng: 100.5982 },
+            { id: 'N17', name: 'วัดพระศรีมหาธาตุ', lat: 13.8741, lng: 100.5960 },
+            { id: 'N16', name: 'กรมทหารราบที่ 11', lat: 13.8647, lng: 100.5901 },
+            { id: 'N15', name: 'บางบัว', lat: 13.8557, lng: 100.5847 },
+            { id: 'N14', name: 'กรมป่าไม้', lat: 13.8471, lng: 100.5794 },
+            { id: 'N13', name: 'มหาวิทยาลัยเกษตรศาสตร์', lat: 13.8407, lng: 100.5752 },
+            { id: 'N12', name: 'เสนานิคม', lat: 13.8327, lng: 100.5721 },
+            { id: 'N11', name: 'รัชโยธิน', lat: 13.8266, lng: 100.5683 },
+            { id: 'N10', name: 'พหลโยธิน 24', lat: 13.8202, lng: 100.5645 },
+            { id: 'N9', name: 'ห้าแยกลาดพร้าว', lat: 13.8142, lng: 100.5606 }
+        ]
+    },
+    {
+        id: 'pink',
+        name: 'MRT สายสีชมพู',
+        color: '#EC4899',
+        stations: [
+            { id: 'PK01', name: 'ศูนย์ราชการนนทบุรี', lat: 13.8601, lng: 100.5134 },
+            { id: 'PK02', name: 'แคราย', lat: 13.8624, lng: 100.5222 },
+            { id: 'PK03', name: 'สนามบินน้ำ', lat: 13.8732, lng: 100.5186 },
+            { id: 'PK04', name: 'สามัคคี', lat: 13.8825, lng: 100.5147 },
+            { id: 'PK05', name: 'กรมชลประทาน', lat: 13.8967, lng: 100.5090 },
+            { id: 'PK06', name: 'แยกปากเกร็ด', lat: 13.9056, lng: 100.5042 },
+            { id: 'PK07', name: 'เลี่ยงเมืองปากเกร็ด', lat: 13.9048, lng: 100.5195 },
+            { id: 'PK08', name: 'แจ้งวัฒนะ-ปากเกร็ด 28', lat: 13.9042, lng: 100.5310 },
+            { id: 'PK09', name: 'ศรีรัช', lat: 13.9026, lng: 100.5401 },
+            { id: 'PK10', name: 'เมืองทองธานี', lat: 13.8996, lng: 100.5478 },
+            { id: 'PK11', name: 'แจ้งวัฒนะ 14', lat: 13.8953, lng: 100.5576 },
+            { id: 'PK12', name: 'ศูนย์ราชการเฉลิมพระเกียรติ', lat: 13.8913, lng: 100.5654 },
+            { id: 'PK13', name: 'โทรคมนาคมแห่งชาติ', lat: 13.8885, lng: 100.5732 },
+            { id: 'PK14', name: 'หลักสี่', lat: 13.8828, lng: 100.5824 },
+            { id: 'PK16', name: 'วัดพระศรีมหาธาตุ', lat: 13.8741, lng: 100.5960 },
+            { id: 'PK17', name: 'รามอินทรา 3', lat: 13.8702, lng: 100.6094 }
+        ]
+    },
+    {
+        id: 'purple',
+        name: 'MRT สายสีม่วง',
+        color: '#8B5CF6',
+        stations: [
+            { id: 'PP01', name: 'คลองบางไผ่', lat: 13.8916, lng: 100.4087 },
+            { id: 'PP02', name: 'ตลาดบางใหญ่', lat: 13.8794, lng: 100.4137 },
+            { id: 'PP03', name: 'สามแยกบางใหญ่', lat: 13.8702, lng: 100.4150 },
+            { id: 'PP04', name: 'บางพลู', lat: 13.8744, lng: 100.4357 },
+            { id: 'PP05', name: 'บางรักใหญ่', lat: 13.8773, lng: 100.4468 },
+            { id: 'PP06', name: 'บางรักน้อยท่าอิฐ', lat: 13.8752, lng: 100.4578 },
+            { id: 'PP07', name: 'ไทรม้า', lat: 13.8718, lng: 100.4706 },
+            { id: 'PP08', name: 'สะพานพระนั่งเกล้า', lat: 13.8715, lng: 100.4812 },
+            { id: 'PP09', name: 'แยกนนทบุรี 1', lat: 13.8647, lng: 100.4907 },
+            { id: 'PP10', name: 'บางกระสอ', lat: 13.8623, lng: 100.5028 },
+            { id: 'PP11', name: 'ศูนย์ราชการนนทบุรี', lat: 13.8601, lng: 100.5134 }
+        ]
+    }
 ];
 
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dm2wr55r5/image/upload';
@@ -1075,13 +1152,12 @@ function CalculatorSection({ defaultPrice, minimalist = false, visualContent, up
   );
 }
 
-// --- SalePage Component ---
+// --- SalePage Component (เวอร์ชันสมบูรณ์: สัดส่วนเป๊ะ/ไม่มีขอบ/บ้านเลขที่อยู่บน) ---
 function SalePage({ property, companyInfo, onBack, properties, onSelectProp, visualContent, updateVisualContent, isEditMode, openLightbox }) {
   const [activeImg, setActiveImg] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const desktopScrollRef = useRef(null);
   const mobileScrollRef = useRef(null);
-  const mainImageScrollRef = useRef(null); // เพิ่ม Ref สำหรับระบบปัดรูปภาพ
   
   const images = Array.isArray(property?.images) && property.images.length > 0 ? property.images : [property?.imageUrl || "https://placehold.co/600x400"];
   const youtubeId = getYoutubeId(property?.youtubeUrl || '');
@@ -1089,8 +1165,6 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
   useEffect(() => {
       setActiveImg(0);
       setIsVideoPlaying(false);
-      // เลื่อนรูปกลับไปที่รูปแรกเสมอเวลาเปลี่ยนบ้าน
-      if (mainImageScrollRef.current) mainImageScrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
   }, [property?.id]);
 
   const safePropName = String(property?.project_name || '').trim();
@@ -1104,18 +1178,10 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
       .map(p => {
           let score = 0;
           const pName = String(p.project_name || '').trim();
-          const pSubDist = String(p.subdistrict || '').trim();
-          const pSubLoc = String(p.sub_location || '').trim();
-          const pDist = String(p.district || '').trim();
-          const pMainLoc = String(p.main_location || '').trim();
-
           if (pName && safePropName && pName === safePropName) score += 1000;
-          if ((pSubDist && safeSubDist && pSubDist === safeSubDist) || 
-              (pSubLoc && safeSubLoc && pSubLoc === safeSubLoc)) score += 100;
-          if ((pDist && safeDist && pDist === safeDist) || 
-              (pMainLoc && safeMainLoc && pMainLoc === safeMainLoc)) score += 50;
+          if ((String(p.subdistrict) === safeSubDist) || (String(p.sub_location) === safeSubLoc)) score += 100;
+          if ((String(p.district) === safeDist) || (String(p.main_location) === safeMainLoc)) score += 50;
           if (p.category === property?.category) score += 10;
-          
           const priceDiff = Math.abs((Number(String(p.price || 0).replace(/,/g, '')) || 0) - (Number(String(property?.price || 0).replace(/,/g, '')) || 0));
           return { ...p, relevanceScore: score, priceDiff };
       })
@@ -1127,52 +1193,36 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
 
   const handleScroll = (refToUse, direction) => {
       if (refToUse && refToUse.current) {
-          const itemWidth = window.innerWidth < 768 ? 316 : 324;
+          const itemWidth = window.innerWidth < 768 ? 232 : 266;
           refToUse.current.scrollBy({ left: direction * itemWidth, behavior: 'smooth' });
-      }
-  };
-
-  // ฟังก์ชันเลื่อนรูปภาพหลักเมื่อกดที่ภาพเล็ก
-  const scrollMainImageTo = (index) => {
-      setActiveImg(index);
-      if (mainImageScrollRef.current) {
-          mainImageScrollRef.current.scrollTo({
-              left: index * mainImageScrollRef.current.clientWidth,
-              behavior: 'smooth'
-          });
       }
   };
 
   const renderRelatedProps = (refToUse) => {
       if (relatedProps.length === 0) return null;
       return (
-          <div className="mt-12 mb-8 px-4 md:px-0 w-full relative reveal-on-scroll">
+          <div className="mt-12 mb-8 w-full relative reveal-on-scroll">
               <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-medium text-brand-green border-l-4 border-brand-green pl-3">โครงการที่คุณอาจสนใจ</h3>
+                  <h3 className="text-lg md:text-xl font-medium text-brand-green border-l-4 border-brand-green pl-3">โครงการที่คุณอาจสนใจ</h3>
                   <div className="hidden md:flex gap-2">
                       <button onClick={() => handleScroll(refToUse, -1)} className="p-2 rounded-full bg-white shadow-sm border border-gray-100 hover:bg-gray-50 text-brand-green transition"><ChevronLeft size={20}/></button>
                       <button onClick={() => handleScroll(refToUse, 1)} className="p-2 rounded-full bg-white shadow-sm border border-gray-100 hover:bg-gray-50 text-brand-green transition"><ChevronRight size={20}/></button>
                   </div>
               </div>
-              <div ref={refToUse} className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-6 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                  {relatedProps.map((p, index) => (
-                      <a href={`/api/share?property=${generatePropSlug(p)}`} key={p.id} onClick={(e) => {
-                          if (!e.ctrlKey && !e.metaKey && !e.button) {
-                              e.preventDefault(); 
-                              if(!isEditMode) onSelectProp(p);
-                          }
-                      }} className={`block bg-white border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden flex flex-col w-[300px] min-w-[300px] h-[400px] min-h-[400px] snap-center flex-shrink-0 ${isEditMode ? 'pointer-events-none cursor-default' : 'cursor-pointer'}`}>
-                          <div className="h-[220px] w-full relative overflow-hidden bg-gray-100 pointer-events-none flex-shrink-0">
-                              <img src={getOptimizedImg(p.images?.[0] || p.imageUrl || "https://placehold.co/600x400", 600)} alt={p.project_name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                              <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-gray-700 px-3 py-1.5 rounded-full font-medium text-xs shadow-sm z-10 flex items-center gap-1.5"><Home size={14} className="text-brand-green" />{p.category}</div>
-                              {p.badge && <div className={`absolute top-3 right-3 px-3 py-1.5 rounded-full font-medium text-xs shadow-sm z-10 text-white ${p.badge === 'Promotion' ? 'bg-red-600' : p.badge === 'New' ? 'bg-blue-600' : p.badge === 'Sold Out' ? 'bg-gray-600' : 'bg-brand-green'}`}>{p.badge}</div>}
+              <div ref={refToUse} className="flex overflow-x-auto snap-x snap-mandatory gap-3 md:gap-4 pb-4 scrollbar-hide">
+                  {relatedProps.map((p) => (
+                      <a href={`/api/share?property=${generatePropSlug(p)}`} key={p.id} onClick={(e) => { if (!e.ctrlKey && !e.metaKey && !e.button) { e.preventDefault(); if(!isEditMode) onSelectProp(p); } }} 
+                         className={`block bg-white border border-gray-200 hover:border-brand-green hover:shadow-md transition-all duration-200 rounded-lg overflow-hidden flex flex-col w-[220px] md:w-[250px] snap-center flex-shrink-0 ${isEditMode ? 'pointer-events-none cursor-default' : 'cursor-pointer'}`}>
+                          <div className="h-[150px] md:h-[160px] w-full relative overflow-hidden bg-gray-100 pointer-events-none flex-shrink-0">
+                              <img src={getOptimizedImg(p.images?.[0] || p.imageUrl, 400)} alt={p.project_name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                              <div className="absolute top-2 left-2 bg-white/95 px-2 py-1 rounded text-[10px] font-medium shadow-sm z-10">{p.category}</div>
+                              {p.badge && <div className={`absolute top-2 right-2 px-2 py-1 rounded font-medium text-[10px] shadow-sm z-10 text-white ${p.badge === 'Promotion' ? 'bg-red-600' : p.badge === 'New' ? 'bg-blue-600' : p.badge === 'Sold Out' ? 'bg-gray-600' : 'bg-brand-green'}`}>{p.badge}</div>}
                           </div>
-                          <div className="p-5 flex flex-col flex-grow pointer-events-none">
-                              <h4 className="font-bold text-gray-800 text-[18px] mb-2 line-clamp-2 leading-snug">{p.project_name}</h4>
-                              <div className="text-[13px] text-gray-500 flex items-center gap-1.5 mb-4"><MapPin size={15} className="flex-shrink-0 text-gray-400" /><span className="font-light truncate">{p.main_location || p.district} {p.sub_location || p.subdistrict ? `- ${p.sub_location || p.subdistrict}` : ''}</span></div>
-                              <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                                  <span className="text-[20px] font-bold text-brand-green"><span className="text-[16px] mr-1">฿</span>{Number(String(p.price || 0).replace(/,/g, '')).toLocaleString()}</span>
-                                  <div className="flex items-center gap-3 text-gray-500 text-[13px]"><div className="flex items-center gap-1.5" title="พื้นที่"><Maximize size={15} /> {p.area_wah}</div><div className="flex items-center gap-1.5" title="ห้องนอน"><Bed size={15} /> {p.bedrooms}</div><div className="flex items-center gap-1.5" title="ห้องน้ำ"><Bath size={15} /> {p.bathrooms}</div></div>
+                          <div className="p-3 flex flex-col flex-grow pointer-events-none">
+                              <h4 className="font-semibold text-brand-green text-[14px] md:text-[15px] mb-1 line-clamp-1">{p.project_name}</h4>
+                              <div className="text-[11px] md:text-xs text-gray-500 flex items-center gap-1 mb-2"><MapPin size={12} className="flex-shrink-0 text-gray-400" /><span className="font-light truncate">{p.main_location || p.district}</span></div>
+                              <div className="mt-auto pt-2 border-t border-gray-100 flex items-center justify-between">
+                                  <span className="text-[16px] md:text-[18px] font-bold text-brand-green">฿{Number(String(p.price || 0).replace(/,/g, '')).toLocaleString()}</span>
                               </div>
                           </div>
                       </a>
@@ -1185,140 +1235,130 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
   if (!property) return null;
 
   return (
-    <div className="relative bg-gray-50 min-h-screen pb-12 animate-in fade-in duration-300 flex-grow w-full max-w-full overflow-hidden">
+    <div className="relative bg-gray-50 min-h-screen pb-12 animate-in fade-in duration-300 flex-grow w-full overflow-hidden">
       
-      {/* --- Dynamic Transparent Background --- */}
+      {/* Background Effect */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
-          <div 
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.15] transition-all duration-1000 ease-in-out"
-              style={{ backgroundImage: `url(${images[activeImg] || images[0] || "https://placehold.co/600x400"})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 via-gray-50/80 to-gray-50" />
+          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.05] transition-all duration-1000 ease-in-out" style={{ backgroundImage: `url(${images[activeImg] || images[0]})` }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 via-gray-50/95 to-gray-50" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8 w-full max-w-full">
+      <div className="relative z-10 max-w-[1100px] mx-auto px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8 lg:gap-12 w-full">
          
-         <div className="lg:w-2/3 space-y-8 flex flex-col order-1 w-full max-w-full reveal-on-scroll">
+         <div className="lg:w-[60%] space-y-6 flex flex-col order-1 w-full reveal-on-scroll">
+            
             <div>
-                <a href="/" onClick={(e) => { 
-                    if (!e.ctrlKey && !e.metaKey && !e.button) { e.preventDefault(); onBack(); }
-                }} className="flex items-center gap-2 text-gray-500 hover:text-brand-green transition-colors text-sm uppercase tracking-wide inline-flex mb-8 cursor-pointer hover:-translate-x-2 transition-transform">
+                <a href="/" onClick={(e) => { if (!e.ctrlKey && !e.metaKey && !e.button) { e.preventDefault(); onBack(); } }} className="flex items-center gap-2 text-gray-500 hover:text-brand-green transition-colors text-sm uppercase tracking-wide inline-flex mb-2 cursor-pointer hover:-translate-x-2 transition-transform">
                    <ChevronLeft size={16} /> ย้อนกลับ
                 </a>
+            </div>
+
+            <div className="mb-2">
+                <span className="bg-brand-green/10 text-brand-green px-3 py-1 rounded-full text-[11px] font-medium tracking-wide mb-3 inline-block">
+                    {property.category}
+                </span>
+                <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 leading-tight">
+                    {property.project_name}
+                </h1>
                 
-                {/* ระบบสไลด์ภาพแบบใช้นิ้วปัด (Native Swipe) */}
-                <div className="relative group mb-4">
-                    <div 
-                        ref={mainImageScrollRef}
-                        className="w-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide rounded-2xl shadow-sm bg-gray-100 min-h-[300px] md:min-h-[450px]"
-                        style={{ scrollBehavior: 'smooth' }}
-                        onScroll={(e) => {
-                            // อัปเดตจุด/สถานะรูปล่าสุด เมื่อมีการปัดเลื่อน
-                            const index = Math.round(e.target.scrollLeft / e.target.clientWidth);
-                            if (index !== activeImg && index >= 0 && index < images.length) {
-                                setActiveImg(index);
-                            }
-                        }}
-                    >
-                        {images.map((img, idx) => (
-                            <div 
-                                key={idx} 
-                                className="w-full flex-shrink-0 snap-center flex items-center justify-center cursor-pointer relative" 
-                                onClick={() => openLightbox && openLightbox(images, idx)}
-                            >
-                                <img src={getOptimizedImg(img, 1200)} className="w-full h-full max-h-[60vh] object-cover md:object-contain" alt={`Slide ${idx}`} />
-                            </div>
-                        ))}
+                {property.house_number && (
+                    <div className="text-gray-700 text-sm md:text-base font-medium mt-1">
+                        บ้านเลขที่ {property.house_number}
                     </div>
+                )}
 
-                    {images.length > 1 && (
-                        <>
-                            <button onClick={(e) => { e.stopPropagation(); scrollMainImageTo(activeImg === 0 ? images.length - 1 : activeImg - 1); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100 hidden md:block"><ChevronLeft /></button>
-                            <button onClick={(e) => { e.stopPropagation(); scrollMainImageTo(activeImg === images.length - 1 ? 0 : activeImg + 1); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100 hidden md:block"><ChevronRight /></button>
-                        </>
-                    )}
-                    
-                    {property.badge && <div className={`absolute top-4 right-4 px-4 py-1.5 rounded-full font-medium text-xs shadow-lg z-10 text-white pointer-events-none ${property.badge === 'Promotion' ? 'bg-red-600' : property.badge === 'New' ? 'bg-blue-600' : property.badge === 'Sold Out' ? 'bg-gray-600' : 'bg-brand-green'}`}>{property.badge}</div>}
-                    <div className="absolute bottom-4 right-4 bg-black/50 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur pointer-events-none hidden md:block">
-                        <Maximize size={20} />
+                <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-2 font-light">
+                    <MapPin size={16} className="text-brand-green flex-shrink-0" />
+                    <span>{property.main_location || property.district} {property.sub_location || property.subdistrict ? `- ${property.sub_location || property.subdistrict}` : ''}</span>
+                </div>
+            </div>
+
+            <div 
+                className="w-full overflow-hidden mb-4 relative group bg-white rounded-xl shadow-sm flex items-center justify-center border border-gray-200 cursor-pointer"
+                onClick={() => openLightbox && openLightbox(images, activeImg)}
+                title="คลิกเพื่อขยายรูปภาพ"
+            >
+                <img 
+                    src={getOptimizedImg(images[activeImg] || images[0] || "https://placehold.co/600x400", 1200)} 
+                    className="w-full h-auto object-contain transition duration-500 animate-pop" 
+                    alt="Main" 
+                />
+                
+                {images.length > 1 && (
+                    <>
+                        <button onClick={(e) => { e.stopPropagation(); setActiveImg(prev => (prev === 0 ? images.length - 1 : prev - 1)); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100 z-20"><ChevronLeft /></button>
+                        <button onClick={(e) => { e.stopPropagation(); setActiveImg(prev => (prev === images.length - 1 ? 0 : prev + 1)); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 text-brand-green p-2 rounded-full hover:bg-white transition shadow-md opacity-0 group-hover:opacity-100 z-20"><ChevronRight /></button>
+                    </>
+                )}
+                {property.badge && <div className={`absolute top-4 right-4 px-4 py-1.5 rounded-full font-medium text-xs shadow-lg z-20 text-white ${property.badge === 'Promotion' ? 'bg-red-600' : property.badge === 'New' ? 'bg-blue-600' : property.badge === 'Sold Out' ? 'bg-gray-600' : 'bg-brand-green'}`}>{property.badge}</div>}
+                
+                <div className="absolute bottom-4 right-4 bg-black/50 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur z-20">
+                    <Maximize size={16} />
+                </div>
+            </div>
+            
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-4">
+                {images.map((img, idx) => (
+                    <button key={idx} onClick={() => setActiveImg(idx)} className={`w-16 h-16 md:w-20 md:h-20 flex-shrink-0 overflow-hidden border-2 transition-all bg-gray-100 rounded-lg ${activeImg === idx ? 'border-brand-green opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}>
+                        <img src={getOptimizedImg(img || "https://placehold.co/100x100", 300)} className="w-full h-full object-cover" alt={`Thumb ${idx}`} />
+                    </button>
+                ))}
+            </div>
+            
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 reveal-on-scroll delay-100">
+               <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                  <div>
+                      <span className="block text-xs text-gray-400 font-light mb-1">ราคาขาย</span>
+                      <span className="text-2xl md:text-3xl font-bold text-brand-green">฿ {Number(String(property.price || 0).replace(/,/g, '')).toLocaleString()}</span>
+                  </div>
+               </div>
+               
+               <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mb-6 py-5 border-y border-gray-100">
+                   <div className="text-center"><Maximize className="mx-auto text-gray-300 mb-1.5 stroke-1" size={24} /><span className="block font-medium text-base">{property.area_wah || '-'}</span><span className="text-[10px] text-gray-400 font-light">ตร.ว.</span></div>
+                   <div className="text-center"><Bed className="mx-auto text-gray-300 mb-1.5 stroke-1" size={24} /><span className="block font-medium text-base">{property.bedrooms || '-'}</span><span className="text-[10px] text-gray-400 font-light">ห้องนอน</span></div>
+                   <div className="text-center"><Bath className="mx-auto text-gray-300 mb-1.5 stroke-1" size={24} /><span className="block font-medium text-base">{property.bathrooms || '-'}</span><span className="text-[10px] text-gray-400 font-light">ห้องน้ำ</span></div>
+                   <div className="text-center"><Car className="mx-auto text-gray-300 mb-1.5 stroke-1" size={24} /><span className="block font-medium text-base">{property.parking || '-'}</span><span className="text-[10px] text-gray-400 font-light">ที่จอดรถ</span></div>
+                   <div className="text-center"><Compass className="mx-auto text-gray-300 mb-1.5 stroke-1" size={24} /><span className="block font-medium text-base">{property.direction || '-'}</span><span className="text-[10px] text-gray-400 font-light">ทิศ</span></div>
+               </div>
+
+               <h3 className="text-base font-medium text-brand-green mb-3">รายละเอียด</h3>
+               <p className="text-gray-600 leading-relaxed font-light whitespace-pre-line mb-6 text-sm">{property.highlights || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
+
+               {Array.isArray(property.facilitiesList) && property.facilitiesList.length > 0 && (
+                   <>
+                   <h3 className="text-base font-medium text-brand-green mb-3">สิ่งอำนวยความสะดวก</h3>
+                   <div className="flex flex-wrap gap-2 mb-6">
+                       {property.facilitiesList.map((fac, i) => (
+                         <span key={i} className="bg-gray-50 text-gray-600 px-3 py-1.5 rounded-full text-xs font-light border border-gray-100">{fac}</span>
+                       ))}
+                   </div>
+                   </>
+               )}
+
+                {youtubeId && (
+                    <div className="mb-6">
+                        <h3 className="text-base font-medium text-brand-green mb-3">วิดีโอแนะนำ</h3>
+                        <div className="aspect-video rounded-xl overflow-hidden bg-black shadow-sm relative">
+                            {!isVideoPlaying ? (
+                                <div className="w-full h-full cursor-pointer group relative" onClick={() => setIsVideoPlaying(true)}>
+                                    <img src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Video Preview" onError={(e) => { e.target.src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`; }} />
+                                    <div className="absolute inset-0 flex items-center justify-center"><div className="w-14 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform"><svg className="w-6 h-6 text-white fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+                                </div>
+                            ) : (
+                                <iframe width="100%" height="100%" src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                            )}
+                        </div>
                     </div>
-                </div>
-                
-                {/* รูปเล็ก (Thumbnails) เลื่อนตามรูปหลักอัตโนมัติ */}
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-8">
-                    {images.map((img, idx) => (
-                        <button key={idx} onClick={() => scrollMainImageTo(idx)} className={`w-20 h-20 md:w-24 md:h-24 flex-shrink-0 overflow-hidden border-2 transition-all bg-gray-100 rounded-lg ${activeImg === idx ? 'border-brand-green opacity-100 scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}>
-                            <img src={getOptimizedImg(img || "https://placehold.co/100x100", 300)} className="w-full h-full object-cover" alt={`Thumb ${idx}`} />
-                        </button>
-                    ))}
-                </div>
-                
-                <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 reveal-on-scroll delay-100">
-                   <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                      <div className="w-full md:w-auto">
-                        <span className="text-gray-500 text-sm font-light tracking-wide">{property.category}</span>
-                        <h1 className="text-2xl md:text-4xl font-light text-brand-green mt-1">{property.project_name}</h1>
-                        <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-3 font-light">
-                            <MapPin size={16} className="text-brand-green flex-shrink-0" />
-                            <span>{property.main_location || property.district} {property.sub_location || property.subdistrict ? `- ${property.sub_location || property.subdistrict}` : ''}</span>
+                )}
+
+                {property.lat && property.lng && String(property.lat).trim() !== '' && String(property.lng).trim() !== '' && (
+                    <div className="mb-2">
+                        <h3 className="text-base font-medium text-brand-green mb-3">ที่ตั้งโครงการ</h3>
+                        <div className="aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-gray-100 border border-gray-200 pointer-events-none">
+                            <iframe width="100%" height="100%" frameBorder="0" style={{ border: 0 }} src={`https://maps.google.com/maps?q=${property.lat},${property.lng}&hl=th&z=16&output=embed`} allowFullScreen></iframe>
                         </div>
-                        {(property.house_number || property.soi) && (
-                            <p className="text-gray-500 text-sm mt-2 font-light">{property.house_number && `บ้านเลขที่ ${property.house_number} `} {property.soi && `ซอย ${property.soi}`}</p>
-                        )}
-                      </div>
-                      <div className="text-left md:text-right w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
-                        <span className="block text-sm text-gray-400 font-light mb-1">ราคาขาย</span>
-                        <span className="text-3xl font-medium text-brand-green">฿ {Number(String(property.price || 0).replace(/,/g, '')).toLocaleString()}</span>
-                      </div>
-                   </div>
-                   
-                   <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mb-8 py-6 border-y border-gray-100">
-                       <div className="text-center"><Maximize className="mx-auto text-gray-300 mb-2 stroke-1" size={28} /><span className="block font-medium text-lg">{property.area_wah || '-'}</span><span className="text-xs text-gray-400 font-light">ตร.ว.</span></div>
-                       <div className="text-center"><Bed className="mx-auto text-gray-300 mb-2 stroke-1" size={28} /><span className="block font-medium text-lg">{property.bedrooms || '-'}</span><span className="text-xs text-gray-400 font-light">ห้องนอน</span></div>
-                       <div className="text-center"><Bath className="mx-auto text-gray-300 mb-2 stroke-1" size={28} /><span className="block font-medium text-lg">{property.bathrooms || '-'}</span><span className="text-xs text-gray-400 font-light">ห้องน้ำ</span></div>
-                       <div className="text-center"><Car className="mx-auto text-gray-300 mb-2 stroke-1" size={28} /><span className="block font-medium text-lg">{property.parking || '-'}</span><span className="text-xs text-gray-400 font-light">ที่จอดรถ</span></div>
-                       <div className="text-center"><Compass className="mx-auto text-gray-300 mb-2 stroke-1" size={28} /><span className="block font-medium text-lg">{property.direction || '-'}</span><span className="text-xs text-gray-400 font-light">ทิศ</span></div>
-                   </div>
-
-                   <h3 className="text-lg font-medium text-brand-green mb-4">รายละเอียด</h3>
-                   <p className="text-gray-600 leading-relaxed font-light whitespace-pre-line mb-8 text-sm md:text-base">{property.highlights || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
-
-                   {Array.isArray(property.facilitiesList) && property.facilitiesList.length > 0 && (
-                       <>
-                       <h3 className="text-lg font-medium text-brand-green mb-4">สิ่งอำนวยความสะดวก</h3>
-                       <div className="flex flex-wrap gap-2 mb-8">
-                           {property.facilitiesList.map((fac, i) => (
-                             <span key={i} className="bg-gray-50 text-gray-600 px-4 py-2 rounded-full text-xs md:text-sm font-light border border-gray-100">{fac}</span>
-                           ))}
-                       </div>
-                       </>
-                   )}
-
-                    {youtubeId && (
-                        <div className="mb-8">
-                            <h3 className="text-lg font-medium text-brand-green mb-4">วิดีโอแนะนำ</h3>
-                            <div className="aspect-video rounded-xl overflow-hidden bg-black shadow-sm relative">
-                                {!isVideoPlaying ? (
-                                    <div className="w-full h-full cursor-pointer group relative" onClick={() => setIsVideoPlaying(true)}>
-                                        <img src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Video Preview" onError={(e) => { e.target.src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`; }} />
-                                        <div className="absolute inset-0 flex items-center justify-center"><div className="w-16 h-12 bg-red-600 rounded-xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform"><svg className="w-8 h-8 text-white fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
-                                    </div>
-                                ) : (
-                                    <iframe width="100%" height="100%" src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {property.lat && property.lng && String(property.lat).trim() !== '' && String(property.lng).trim() !== '' && (
-                        <div className="mb-8">
-                            <h3 className="text-lg font-medium text-brand-green mb-4">ที่ตั้งโครงการ</h3>
-                            <div className="aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-gray-100 border border-gray-200 pointer-events-none">
-                                <iframe width="100%" height="100%" frameBorder="0" style={{ border: 0 }} src={`https://www.google.com/maps?q=${String(property.lat).replace(/,/g, '.')},${String(property.lng).replace(/,/g, '.')}&hl=th&z=16&output=embed`} allowFullScreen></iframe>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
             
             <div className="hidden lg:block order-2">
@@ -1326,21 +1366,21 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
             </div>
          </div>
 
-         <div className="lg:w-1/3 space-y-6 order-2 w-full max-w-full reveal-on-scroll delay-200">
+         <div className="lg:w-[40%] space-y-6 order-2 w-full reveal-on-scroll delay-200">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24 text-center">
-                {companyInfo?.logoUrl && (<img src={companyInfo.logoUrl} alt="Logo" className="h-16 mx-auto mb-4 object-contain" />)}
-                <h3 className="font-medium text-lg mb-6">สนใจติดต่อ</h3>
-                <div className="space-y-3 mb-8">
-                    <a href={isEditMode ? '#' : `tel:${companyInfo?.phone}`} className={`flex items-center justify-center gap-2 w-full bg-brand-green text-white py-3.5 rounded-full font-light hover:bg-opacity-90 transition hover:-translate-y-1 ${isEditMode ? 'pointer-events-none' : ''}`}><Phone size={18} /> {companyInfo?.phone}</a>
-                    <a href={isEditMode ? '#' : companyInfo?.line} target="_blank" rel="noreferrer" className={`flex items-center justify-center gap-2 w-full bg-[#06C755] text-white py-3.5 rounded-full font-light hover:bg-opacity-90 transition hover:-translate-y-1 ${isEditMode ? 'pointer-events-none' : ''}`}><MessageCircle size={18} /> ทักไลน์</a>
+                {companyInfo?.logoUrl && (<img src={companyInfo.logoUrl} alt="Logo" className="h-12 mx-auto mb-4 object-contain" />)}
+                <h3 className="font-medium text-base mb-5">สนใจติดต่อ</h3>
+                <div className="space-y-3 mb-6">
+                    <a href={isEditMode ? '#' : `tel:${companyInfo?.phone}`} className={`flex items-center justify-center gap-2 w-full bg-brand-green text-white py-3 rounded-full text-sm font-light hover:bg-opacity-90 transition hover:-translate-y-1 ${isEditMode ? 'pointer-events-none' : ''}`}><Phone size={16} /> {companyInfo?.phone}</a>
+                    <a href={isEditMode ? '#' : companyInfo?.line} target="_blank" rel="noreferrer" className={`flex items-center justify-center gap-2 w-full bg-[#06C755] text-white py-3 rounded-full text-sm font-light hover:bg-opacity-90 transition hover:-translate-y-1 ${isEditMode ? 'pointer-events-none' : ''}`}><MessageCircle size={16} /> ทักไลน์</a>
                 </div>
-                <div className="border-t border-gray-100 pt-6 text-left">
+                <div className="border-t border-gray-100 pt-5 text-left">
                     <CalculatorSection defaultPrice={property.price} minimalist={true} visualContent={visualContent} updateVisualContent={updateVisualContent} isEditMode={isEditMode} />
                 </div>
             </div>
          </div>
 
-         <div className="block lg:hidden order-3 w-full max-w-full mt-8">
+         <div className="block lg:hidden order-3 w-full mt-6">
              {renderRelatedProps(mobileScrollRef)}
          </div>
       </div>
