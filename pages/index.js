@@ -18,6 +18,8 @@ import { Home, MapPin, Bed, Bath, Car, Maximize, Phone, MessageCircle, Menu, X, 
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged, signOut, signInAnonymously, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import Head from 'next/head';
+
 
 const Facebook = ({ size = 24, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
@@ -3172,6 +3174,13 @@ export default function App() {
   return (
     <>
       <style>{globalCss}</style>
+      
+      <Head>
+        <title>Startup Up Real Estate | บ้านสวยคัดมาแล้ว</title>
+        <link rel="icon" type="image/png" href="/favicon-new.png" />
+        <link rel="apple-touch-icon" href="/favicon-new.png" />
+      </Head>
+
       <div className={`text-gray-800 bg-white min-h-screen flex flex-col font-sans relative ${isVisualEditMode ? 'pb-24 border-4 border-blue-500' : ''}`}>
         
         {showPopupModal && (
