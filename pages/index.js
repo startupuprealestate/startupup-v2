@@ -3175,11 +3175,19 @@ export default function App() {
     <>
       <style>{globalCss}</style>
       
-      <Head>
-        <title>Startup Up Real Estate | บ้านสวยคัดมาแล้ว</title>
+    <Head>
+        <title>Startup Up Real Estate | จุดเริ่มต้นของคนอยากมีบ้าน</title>
+  
+        {/* บรรทัดนี้คือตัวกำหนดข้อความในกรอบสีแดงครับ */}
+        <meta name="description" content="รวมบ้านมือสองรีโนเวทพร้อมอยู่ ย่านรังสิต คลองหลวง ลำลูกกา ปทุมธานี บริการยื่นสินเชื่อฟรี ดูแลจนถึงวันโอน" />
+  
+        {/* บรรทัดเหล่านี้ช่วยให้แสดงผลบน Facebook/LINE สวยขึ้น */}
+        <meta property="og:title" content="Startup Up Real Estate | จุดเริ่มต้นของคนอยากมีบ้าน" />
+        <meta property="og:description" content="จุดเริ่มต้นของคนอยากมีบ้าน รวมบ้านสวยรีโนเวทใหม่พร้อมอยู่" />
+  
         <link rel="icon" type="image/png" href="/favicon-new.png" />
         <link rel="apple-touch-icon" href="/favicon-new.png" />
-      </Head>
+    </Head>
 
       <div className={`text-gray-800 bg-white min-h-screen flex flex-col font-sans relative ${isVisualEditMode ? 'pb-24 border-4 border-blue-500' : ''}`}>
         
