@@ -1369,11 +1369,32 @@ function SalePage({ property, companyInfo, onBack, properties, onSelectProp, vis
                 )}
 
                 {property.lat && property.lng && String(property.lat).trim() !== '' && String(property.lng).trim() !== '' && (
-                    <div className="mb-2">
+                    <div className="mb-6">
                         <h3 className="text-base font-medium text-brand-green mb-3">ที่ตั้งโครงการ</h3>
-                        <div className="aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-gray-100 border border-gray-200 pointer-events-none">
-                            <iframe width="100%" height="100%" frameBorder="0" style={{ border: 0 }} src={`https://maps.google.com/maps?q=${property.lat},${property.lng}&hl=th&z=16&output=embed`} allowFullScreen></iframe>
+                        
+                        {/* ลบ pointer-events-none ออก เพื่อให้ลูกค้าใช้นิ้วเลื่อนซูมแผนที่ได้ */}
+                        <div className="aspect-video md:aspect-[21/9] rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm relative">
+                            <iframe 
+                                width="100%" 
+                                height="100%" 
+                                frameBorder="0" 
+                                style={{ border: 0 }} 
+                                src={`https://maps.google.com/maps?q=${property.lat},${property.lng}&hl=th&z=16&output=embed`} 
+                                allowFullScreen
+                                loading="lazy"
+                            ></iframe>
                         </div>
+                        
+                        {/* ปุ่มเปิดแอปนำทาง */}
+                        <a 
+                            href={isEditMode ? "#" : `https://www.google.com/maps/dir/?api=1&destination=${property.lat},${property.lng}`}
+                            target={isEditMode ? "_self" : "_blank"}
+                            rel="noopener noreferrer"
+                            className={`mt-3 flex items-center justify-center gap-2 bg-white text-brand-green border border-brand-green hover:bg-brand-green hover:text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors w-full shadow-sm ${isEditMode ? 'pointer-events-none opacity-50' : ''}`}
+                        >
+                            <MapPin size={18} /> 
+                            เปิดนำทางด้วย Google Maps
+                        </a>
                     </div>
                 )}
             </div>
@@ -1888,7 +1909,11 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
             .catch(err => console.error('Failed to load thai address data', err));
     }, []);
 
-    const filteredProperties = properties.filter(p => p?.project_name?.toLowerCase()?.includes(searchTerm.toLowerCase()));
+    const filteredProperties = properties.filter(p => 
+        p?.project_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+        p?.house_number?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+        p?.custom_id?.toLowerCase()?.includes(searchTerm.toLowerCase())
+    );
 
     const startEdit = (prop) => {
         setEditData(prop); setFormData({ ...initialForm, ...prop, facilitiesList: prop.facilitiesList || [] }); setImagesPreview(prop.images || (prop.imageUrl ? [prop.imageUrl] : []));
