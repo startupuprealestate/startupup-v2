@@ -71,11 +71,14 @@ export default async function handler(req, res) {
         
         imageUrl = (prop.images && prop.images.length > 0) ? prop.images[0] : (prop.imageUrl || imageUrl);
         
-        // ทำให้ภาพ Cloudinary โหลดเร็วและขนาดพอดีกับโซเชียลมีเดีย
+        // 🟢 แก้ไข: บังคับให้เป็น f_jpg เพื่อให้ Facebook Messenger อ่านรูปออก 100%
         if (imageUrl.includes('cloudinary.com')) {
-            imageUrl = imageUrl.replace('/upload/', `/upload/f_auto,q_auto,w_1200,h_630,c_limit/`);
+            imageUrl = imageUrl.replace('/upload/', `/upload/f_jpg,q_auto,w_1200,h_630,c_limit/`);
         }
     }
+
+    // 🟢 แก้ไข: เปลี่ยนโดเมนให้เป็นเว็บหลักปัจจุบัน (v2)
+    const currentDomain = 'https://www.startupup-real-estate.com';
 
     // 5. สร้าง HTML ส่งกลับไป (มี Meta tags สำหรับ Bot และ Script ย้ายหน้าสำหรับผู้ใช้)
     const html = `
@@ -86,20 +89,19 @@ export default async function handler(req, res) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${title}</title>
         
-        <!-- Open Graph / Facebook / LINE -->
         <meta property="og:type" content="website" />
         <meta property="og:title" content="${title}" />
         <meta property="og:description" content="${description}" />
         <meta property="og:image" content="${imageUrl}" />
-        <meta property="og:url" content="https://startupuprealestate.vercel.app/api/share?property=${encodeURIComponent(propertySlug)}" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:url" content="${currentDomain}/api/share?property=${encodeURIComponent(propertySlug)}" />
         
-        <!-- Twitter -->
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="${title}" />
         <meta name="twitter:description" content="${description}" />
         <meta name="twitter:image" content="${imageUrl}" />
 
-        <!-- ย้ายหน้าไปยัง URL หลัก (React App) อัตโนมัติ -->
         <script>
             window.location.replace("/?property=${encodeURIComponent(propertySlug)}");
         </script>
@@ -109,6 +111,7 @@ export default async function handler(req, res) {
           .loader { border: 4px solid #eef3f0; border-top: 4px solid #0b3d1b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
           @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         </style>
+    </head>
     </head>
     <body>
         <div style="text-align: center;">
