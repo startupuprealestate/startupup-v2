@@ -23,6 +23,8 @@ import { fetchPublicCollectionRest, fetchPublicDocumentRest, makePropertySlug, m
 import { buildPageSeo, buildStructuredData, safeJsonLd } from '../../lib/seo';
 import { PROPERTY_OWNERS, DEFAULT_PROPERTY_OWNER, getPropertyOwner, selectPublicProperties } from '../../lib/propertyOwners';
 import { normalizeHouseKey, houseAliasKey } from '../../lib/masterStock';
+import { subscribeSiteSession } from '../../lib/siteSession';
+import { getPendingStockHouses, groupAdminStock } from '../../lib/adminStock';
 
 
 const Facebook = ({ size = 24, className = "" }) => (
@@ -2268,8 +2270,6 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
     const [isStockRefreshing, setIsStockRefreshing] = useState(false);
     const [alertOnlyOwners, setAlertOnlyOwners] = useState({});
     const [expandedPendingGroups, setExpandedPendingGroups] = useState({});
-    const [showPendingStock, setShowPendingStock] = useState(false);
-    const [pendingStockExpanded, setPendingStockExpanded] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
     // Uploading states
@@ -2380,21 +2380,9 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
         };
     }, []);
 
-    const filteredProperties = properties.filter(p => 
-        p?.project_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-        p?.house_number?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-        p?.custom_id?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-        p?.property_owner?.toLowerCase()?.includes(searchTerm.toLowerCase())
-    );
-
-    const groupedProperties = PROPERTY_OWNERS.map(owner => ({
-        owner,
-        items: filteredProperties.filter(prop => getPropertyOwner(prop) === owner)
-    }));
-
     /**
      * เทียบกับสต๊อกกลาง (Google Sheet) ว่าบ้านหลังนี้ยังอยู่ไหม
-     * เช็คเฉพาะบ้านของ Startup Up — บ้าน Partner ไม่ได้อยู่ในชีตสต๊อกกลางอยู่แล้ว
+     * รวมชีตของ Startup Up และ Partner เพื่อแสดงบ้านที่ยังไม่ได้ลงเว็บในกลุ่มเจ้าของด้วย
      */
     const loadStockCheck = useCallback(async ({ force = false } = {}) => {
         setIsStockRefreshing(true);
@@ -2435,48 +2423,8 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
      * บ้านที่ยังอยู่ในสต๊อกกลางแต่ยังไม่มีในเว็บ — เอาไว้เตือนว่ายังต้องไปลงประกาศ
      * เทียบด้วยบ้านเลขที่ และเผื่อกรณีกรอกเลขไม่ครบด้วยโครงการ+เลขท้าย
      */
-    const pendingStockHouses = useMemo(() => {
-        const rows = stockIndex?.pending;
-        if (!Array.isArray(rows) || !rows.length) return [];
-
-        const webKeys = new Set();
-        const webAliases = new Set();
-        properties.forEach((prop) => {
-            const key = normalizeHouseKey(prop?.house_number);
-            if (!key) return;
-            webKeys.add(key);
-            const alias = houseAliasKey(prop?.project_name, key);
-            if (alias) webAliases.add(alias);
-        });
-
-        return rows.filter((row) => {
-            if (webKeys.has(row.key)) return false;
-            const alias = houseAliasKey(row.project, row.key);
-            return !(alias && webAliases.has(alias));
-        });
-    }, [stockIndex, properties]);
-
-    // จัดกลุ่มตามชีตต้นทาง แล้วดันหลังที่พร้อมขายขึ้นก่อน (บ้านที่ยังไม่เสร็จยังไม่ต้องรีบลง)
-    const pendingStockGroups = useMemo(() => {
-        const rank = (status) => {
-            const text = String(status || '');
-            if (/ยังไม่เสร็จ/.test(text)) return 2;
-            if (/ว่าง/.test(text)) return 0;
-            return 1;
-        };
-        const groups = new Map();
-        pendingStockHouses.forEach((row) => {
-            const label = row.owner || row.source;
-            if (!groups.has(label)) groups.set(label, []);
-            groups.get(label).push(row);
-        });
-        return [...groups.entries()].map(([label, items]) => ({
-            label,
-            items: [...items].sort((a, b) => rank(a.status) - rank(b.status)
-                || String(a.project).localeCompare(String(b.project), 'th')),
-            readyCount: items.filter((row) => rank(row.status) === 0).length,
-        }));
-    }, [pendingStockHouses]);
+    const pendingStockHouses = useMemo(() => getPendingStockHouses(stockIndex, properties), [stockIndex, properties]);
+    const groupedProperties = useMemo(() => groupAdminStock(properties, pendingStockHouses, searchTerm), [properties, pendingStockHouses, searchTerm]);
 
     const OWNER_PREVIEW_COUNT = 6;
     // ค่าเริ่มต้น: ย่อทุกกลุ่มไว้ก่อน กดเองถึงจะกาง (เก็บ false = กางอยู่)
@@ -2489,7 +2437,7 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
         setAlertOnlyOwners(prev => ({ ...prev, [owner]: !prev[owner] }));
     };
 
-    const isPendingGroupExpanded = (label) => pendingStockExpanded || !!expandedPendingGroups[label];
+    const isPendingGroupExpanded = (label) => !!searchTerm || !!expandedPendingGroups[label];
     const togglePendingGroup = (label) => setExpandedPendingGroups(prev => ({ ...prev, [label]: !prev[label] }));
     const toggleOwnerExpand = (owner) => setExpandedOwners(prev => ({ ...prev, [owner]: !prev[owner] }));
 
@@ -2519,6 +2467,16 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
         setIsEditing(true);
     };
     const startNew = () => { setEditData(null); setFormData(initialForm); setImagesPreview([]); setAddressOptions([]); setIsEditing(true); };
+    const startFromStock = (row) => {
+        startNew();
+        const price = Number(String(row.price || '').replace(/,/g, ''));
+        // Naphat's source sheet quotes prices in millions of baht.
+        const priceBaht = row.owner === 'Naphat' && price > 0 && price < 1000 ? Math.round(price * 1000000) : price;
+        setFormData({ ...initialForm, property_owner: row.owner || DEFAULT_PROPERTY_OWNER,
+            project_name: row.project, house_number: row.houseNumber === '-' ? '' : row.houseNumber,
+            custom_id: row.houseNumber === '-' ? '' : row.houseNumber.replace(/\//g, '-').replace(/\s+/g, ''),
+            price: priceBaht > 0 ? String(priceBaht) : '' });
+    };
 
     const handleZipcodeChange = (e) => {
         const code = e.target.value; setFormData(prev => ({ ...prev, zipcode: code }));
@@ -2920,7 +2878,7 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 gap-6">
-                                {groupedProperties.map(({ owner, items }) => {
+                                {groupedProperties.map(({ owner, items, pending }) => {
                                     const alertItems = items.filter((prop) => getStockAlert(prop));
                                     const alertCount = alertItems.length;
                                     const alertOnly = alertCount > 0 && !!alertOnlyOwners[owner];
@@ -2963,7 +2921,7 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
                                                     onClick={() => toggleOwnerCollapse(owner)}
                                                     className="text-xs text-gray-500 bg-gray-50 border border-gray-100 px-3 py-1 rounded-full hover:bg-gray-100 hover:text-gray-600 transition"
                                                 >
-                                                    {items.length} รายการ{isCollapsed ? ' • กดเพื่อแสดง' : ''}
+                                                    {items.length + pending.length} รายการ • บันทึกในเว็บ {items.length} • รอลงเว็บ {pending.length}{isCollapsed ? ' • กดเพื่อแสดง' : ''}
                                                 </button>
                                             </div>
                                         </div>
@@ -3023,87 +2981,34 @@ function AdminPanel({ userRole, userEmail, properties, users, companyInfo, popup
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="bg-white/70 border border-dashed border-gray-200 rounded-xl px-4 py-6 text-center text-sm text-gray-400">ยังไม่มีบ้านในกลุ่มนี้</div>
+                                            pending.length === 0 ? <div className="bg-white/70 border border-dashed border-gray-200 rounded-xl px-4 py-6 text-center text-sm text-gray-400">ยังไม่มีบ้านในกลุ่มนี้</div> : null
                                         ))}
-                                    </section>
-                                    );
-                                })}
-
-                                {pendingStockHouses.length > 0 && (
-                                    <section className="space-y-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPendingStock((value) => !value)}
-                                            aria-expanded={showPendingStock}
-                                            className="w-full text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-white border border-blue-100 rounded-xl px-4 py-3 shadow-sm hover:border-blue-300 transition"
-                                        >
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <ChevronDown size={16} className={`text-gray-400 transition-transform ${showPendingStock ? '' : '-rotate-90'}`} />
-                                                <FolderPlus size={16} className="text-blue-600" />
-                                                <h4 className="font-medium text-blue-700">ยังไม่ได้ลงเว็บ</h4>
-                                                <span className="text-[11px] text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">อยู่ใน Master Stock แต่ยังไม่มีในเว็บ</span>
-                                            </div>
-                                            <span className="text-xs text-gray-500 bg-gray-50 border border-gray-100 px-3 py-1 rounded-full self-start sm:self-auto">
-                                                {pendingStockHouses.length} หลัง{showPendingStock ? '' : ' • กดเพื่อแสดง'}
-                                            </span>
-                                        </button>
-
-                                        {showPendingStock && (
-                                            <div className="space-y-4">
-                                                {pendingStockGroups.map(({ label, items, readyCount }) => {
-                                                    const groupExpanded = isPendingGroupExpanded(label);
-                                                    const visible = groupExpanded ? items : items.slice(0, PENDING_PREVIEW_COUNT);
-                                                    return (
-                                                        <div key={label} className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-                                                            <div className="flex items-center justify-between gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-                                                                <span className="text-sm font-medium text-gray-700">{label}</span>
-                                                                <span className="text-xs text-gray-500">
-                                                                    {items.length} หลัง{readyCount > 0 ? ` • พร้อมขาย ${readyCount}` : ''}
-                                                                </span>
+                                        {!isCollapsed && !alertOnly && pending.length > 0 && (
+                                            <div className="bg-white border border-blue-100 rounded-xl overflow-hidden">
+                                                <h5 className="px-4 py-3 text-sm font-medium text-blue-700 bg-blue-50">จาก Master Stock • ยังไม่ได้ลงเว็บ {pending.length} หลัง</h5>
+                                                <ul className="divide-y divide-gray-100">
+                                                    {(isPendingGroupExpanded(owner) ? pending : pending.slice(0, PENDING_PREVIEW_COUNT)).map(row => (
+                                                        <li key={`${row.source}-${row.key}-${row.project}`} className="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="font-medium text-gray-700">{row.project || 'ไม่ระบุโครงการ'} • {row.houseNumber}</p>
+                                                                <p className="text-xs text-gray-500 mt-1">{[row.zone, row.status].filter(Boolean).join(' • ')}</p>
                                                             </div>
-                                                            <ul className="divide-y divide-gray-50">
-                                                                {visible.map((row) => (
-                                                                    <li key={`${row.source}-${row.key}-${row.project}`} className="px-4 py-2.5 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm">
-                                                                        <span className="font-medium text-gray-700 flex-1 min-w-0 truncate">{row.project || 'ไม่ระบุโครงการ'}</span>
-                                                                        <span className="text-gray-500 sm:w-32">{row.houseNumber}</span>
-                                                                        <span className={`text-[11px] px-2 py-0.5 rounded-full border self-start ${/ยังไม่เสร็จ/.test(row.status) ? 'text-amber-700 bg-amber-50 border-amber-100' : 'text-brand-green bg-brand-light border-green-100'}`}>
-                                                                            {row.status || 'ไม่ระบุสถานะ'}
-                                                                        </span>
-                                                                        <span className="text-gray-400 text-xs sm:w-40 sm:text-right">{[row.zone, row.price].filter(Boolean).join(' • ')}</span>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                            {items.length > PENDING_PREVIEW_COUNT && (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => togglePendingGroup(label)}
-                                                                    className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs text-gray-500 bg-gray-50/50 border-t border-gray-100 hover:text-blue-600 hover:bg-blue-50/50 transition"
-                                                                >
-                                                                    {groupExpanded ? 'ย่อรายการ' : `ดูอีก ${items.length - PENDING_PREVIEW_COUNT} หลัง`}
-                                                                    <ChevronDown size={14} className={`transition-transform ${groupExpanded ? 'rotate-180' : ''}`} />
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-
-                                                {pendingStockHouses.length > PENDING_PREVIEW_COUNT && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setPendingStockExpanded((value) => !value);
-                                                            setExpandedPendingGroups({});
-                                                        }}
-                                                        className="w-full flex items-center justify-center gap-1.5 bg-white border border-dashed border-gray-200 text-sm text-gray-500 hover:text-blue-600 hover:border-blue-200 rounded-xl py-3 transition"
-                                                    >
-                                                        {pendingStockExpanded ? 'ย่อทุกกลุ่ม' : 'กางทุกกลุ่ม'}
-                                                        <ChevronDown size={16} className={`transition-transform ${pendingStockExpanded ? 'rotate-180' : ''}`} />
+                                                            <button type="button" onClick={() => startFromStock(row)} className="text-blue-700 bg-blue-50 rounded-lg px-3 py-2 self-start flex items-center gap-1"><Plus size={14}/> เพิ่มข้อมูลลงเว็บ</button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                                {!searchTerm && pending.length > PENDING_PREVIEW_COUNT && (
+                                                    <button type="button" onClick={() => togglePendingGroup(owner)} className="w-full text-xs text-blue-700 bg-blue-50/50 py-3">
+                                                        {isPendingGroupExpanded(owner) ? 'ย่อรายการจาก Master Stock' : `ดูจาก Master Stock อีก ${pending.length - PENDING_PREVIEW_COUNT} หลัง`}
                                                     </button>
                                                 )}
                                             </div>
                                         )}
                                     </section>
-                                )}
+                                    );
+                                })}
+
+
                             </div>
                         </div>
                     )}
@@ -3751,54 +3656,21 @@ export default function App() {
       return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isVisualEditMode, undoVisual, redoVisual]);
 
-  useEffect(() => {
-    const initAuth = async () => {
-        try { if (!auth.currentUser) await signInAnonymously(auth); } 
-        catch (error) { 
-            console.error(error);
-        }
-    };
-    initAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-        setUser(currentUser);
-        if (currentUser && !currentUser.isAnonymous) {
-            const email = currentUser.email.toLowerCase();
-            
-            if (email === HOST_EMAIL.toLowerCase()) {
-                setUserRole('host');
-                setUserEmail(email);
-                return;
-            }
-
-            try {
-                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', email);
-                const userDocSnap = await getDoc(userDocRef);
-                
-                if (userDocSnap.exists()) {
-                    const role = userDocSnap.data().role;
-                    if (role === 'admin' || role === 'host') {
-                        setUserRole(role);
-                        setUserEmail(email);
-                    } else {
-                        setUserRole(null);
-                        setUserEmail('');
-                    }
-                } else {
-                    setUserRole(null);
-                    setUserEmail('');
-                }
-            } catch (e) {
-                console.error("Error fetching user role:", e);
-                setUserRole(null);
-            }
-        } else {
-            setUserRole(null);
-            setUserEmail('');
-        }
-    });
-    return () => unsubscribe();
-  }, []);
+  useEffect(() => subscribeSiteSession({
+    auth, hostEmail: HOST_EMAIL,
+    observeAuth: onAuthStateChanged,
+    signInGuest: signInAnonymously,
+    observeRole: (email, onRole, onError) => onSnapshot(
+      doc(db, 'artifacts', appId, 'public', 'data', 'users', email),
+      snapshot => onRole(snapshot.exists() ? snapshot.data().role : null),
+      onError,
+    ),
+    onSession: (session) => {
+      setUser(session.user);
+      setUserRole(session.userRole);
+      setUserEmail(session.userEmail);
+    },
+  }), []);
 
   useEffect(() => {
     if (!loading) return;

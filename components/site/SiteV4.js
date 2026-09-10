@@ -77,7 +77,7 @@ function Waiting() {
 export default function SiteV4({ basePath = '/v4' }) {
   const site = useSiteData({ basePath });
   const {
-    userRole, userEmail, properties, publicProperties, companyInfo, authorizedUsers,
+    userRole, userEmail, authReady, properties, publicProperties, companyInfo, authorizedUsers,
     loading, visualContent, popupData,
     activeTab, setActiveTab, searchParams, selectedProperty, requestedPropSlug, setSelectedProperty,
     showLoginModal, setShowLoginModal, showAdminPanel, setShowAdminPanel,
@@ -138,21 +138,20 @@ export default function SiteV4({ basePath = '/v4' }) {
    * useSiteData จะล้างพารามิเตอร์นี้ออกจากแถบที่อยู่เองในจังหวะถัดไป
    * รอให้โหลดเสร็จก่อนค่อยตัดสินใจ เพราะสิทธิ์ของบัญชีเพิ่งกู้คืนมาจาก Firebase
    */
-  /* อ่านตั้งแต่ render แรกเลย ไม่ใช่ใน useEffect
-     เพราะ useSiteData ล้าง query string ทิ้งด้วย pushState ตั้งแต่จังหวะต้น ๆ
-     ถ้าอ่านช้ากว่านั้นแม้เสี้ยววินาที ?admin=1 จะหายไปก่อนได้อ่าน */
-  const [adminEntryPending, setAdminEntryPending] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    try { return new URLSearchParams(window.location.search).get('admin') === '1'; }
-    catch (e) { return false; }
-  });
+  // Capture the URL before useSiteData rewrites it, but render the loading UI
+  // only after mount so the server and hydration markup remain identical.
+  const adminEntryRequested = useRef(typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('admin') === '1');
+  const [adminEntryPending, setAdminEntryPending] = useState(false);
   useEffect(() => {
-    if (!adminEntryPending) return;
+    if (adminEntryRequested.current) setAdminEntryPending(true);
+  }, []);
+  useEffect(() => {
+    if (!adminEntryPending || !authReady) return;
     setAdminEntryPending(false);
-    /* ห้ามรอ loading เด็ดขาด ถ้าโหลดข้อมูลค้าง มันรอได้ถึง 20 วินาทีก่อนยอมแพ้
-       ระหว่างนั้นหน้าจะเงียบสนิทเหมือนลิงก์ใช้ไม่ได้ */
+    // รอเฉพาะการกู้คืนบัญชีและสิทธิ์ แยกจากการโหลดข้อมูลหน้าเว็บ
     if (userRole) setShowAdminPanel(true); else setShowLoginModal(true);
-  }, [adminEntryPending, userRole, setShowAdminPanel, setShowLoginModal]);
+  }, [adminEntryPending, authReady, userRole, setShowAdminPanel, setShowLoginModal]);
 
   const isCinemaView = activeTab === 'home' && !selectedProperty && !requestedPropSlug;
   const isWaiting = loading || Boolean(requestedPropSlug);
@@ -619,6 +618,11 @@ export default function SiteV4({ basePath = '/v4' }) {
           onConfirm={globalAlert.onConfirm}
         />
 
+        {adminEntryPending && !authReady && (
+          <div role="status" className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center">
+            <div className="bg-white rounded-xl p-6 flex items-center gap-3"><Loader size={20} className="animate-spin" /> กำลังกู้คืนการเข้าสู่ระบบ...</div>
+          </div>
+        )}
         {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onGoogleLogin={handleGoogleLogin} />}
 
         {showAdminPanel && (

@@ -31,6 +31,7 @@ import {
 } from '../../lib/firestorePublic';
 import { buildPageSeo, buildStructuredData } from '../../lib/seo';
 import { selectPublicProperties } from '../../lib/propertyOwners';
+import { subscribeSiteSession } from '../../lib/siteSession';
 
 import {
   db, auth, appId, HOST_EMAIL, markPublicDataChanged,
@@ -45,6 +46,7 @@ import {
  */
 export default function useSiteData({ basePath = '/' } = {}) {
   const [user, setUser] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [properties, setProperties] = useState([]);
@@ -183,6 +185,8 @@ export default function useSiteData({ basePath = '/' } = {}) {
       });
     } catch (e) { /* ไม่มี window ก็ข้ามไป */ }
 
+    if (showAdminPanel) params.set('admin', '1');
+
     const queryString = params.toString() ? `?${params.toString()}` : '';
 
     try {
@@ -192,7 +196,7 @@ export default function useSiteData({ basePath = '/' } = {}) {
         window.history.pushState({}, '', newUrl);
       }
     } catch (e) { /* ไม่มี history ก็ข้ามไป */ }
-  }, [activeTab, selectedProperty, searchParams, requestedPropSlug, basePath, isRouteReady]);
+  }, [activeTab, selectedProperty, searchParams, requestedPropSlug, basePath, isRouteReady, showAdminPanel]);
 
   /* ---------- ป็อปอัปโปรโมชั่น ---------- */
   useEffect(() => {
@@ -303,51 +307,22 @@ export default function useSiteData({ basePath = '/' } = {}) {
   }, [userRole, visualContent, updateVisualContent]);
 
   /* ---------- ล็อกอิน / สิทธิ์ ---------- */
-  useEffect(() => {
-    const initAuth = async () => {
-      try { if (!auth.currentUser) await signInAnonymously(auth); }
-      catch (error) { console.error(error); }
-    };
-    initAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser && !currentUser.isAnonymous) {
-        const email = currentUser.email.toLowerCase();
-
-        if (email === HOST_EMAIL.toLowerCase()) {
-          setUserRole('host');
-          setUserEmail(email);
-          return;
-        }
-
-        try {
-          const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', email);
-          const userDocSnap = await getDoc(userDocRef);
-          if (userDocSnap.exists()) {
-            const role = userDocSnap.data().role;
-            if (role === 'admin' || role === 'host') {
-              setUserRole(role);
-              setUserEmail(email);
-            } else {
-              setUserRole(null);
-              setUserEmail('');
-            }
-          } else {
-            setUserRole(null);
-            setUserEmail('');
-          }
-        } catch (e) {
-          console.error('Error fetching user role:', e);
-          setUserRole(null);
-        }
-      } else {
-        setUserRole(null);
-        setUserEmail('');
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  useEffect(() => subscribeSiteSession({
+    auth, hostEmail: HOST_EMAIL,
+    observeAuth: onAuthStateChanged,
+    signInGuest: signInAnonymously,
+    observeRole: (email, onRole, onError) => onSnapshot(
+      doc(db, 'artifacts', appId, 'public', 'data', 'users', email),
+      snapshot => onRole(snapshot.exists() ? snapshot.data().role : null),
+      onError,
+    ),
+    onSession: (session) => {
+      setUser(session.user);
+      setUserRole(session.userRole);
+      setUserEmail(session.userEmail);
+      setAuthReady(session.authReady);
+    },
+  }), []);
 
   useEffect(() => {
     if (!loading) return;
@@ -642,7 +617,7 @@ export default function useSiteData({ basePath = '/' } = {}) {
 
   return {
     // ข้อมูล
-    user, userRole, userEmail, properties, publicProperties, companyInfo,
+    user, userRole, userEmail, authReady, properties, publicProperties, companyInfo,
     authorizedUsers, loading, visualContent, popupData,
     // สถานะหน้าจอ
     activeTab, setActiveTab, isRouteReady, searchParams, selectedProperty,
